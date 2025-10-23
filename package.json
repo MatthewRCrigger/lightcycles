@@ -1,0 +1,29 @@
+{
+  "name": "lightcycles-game",
+  "version": "1.0.0",
+  "description": "A Tron Light Cycles game with enhanced AI and modern ES6 modules",
+  "type": "module",
+  "main": "js/main.js",
+  "scripts": {
+    "dev": "vite",
+    "start": "npm run dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "game",
+    "tron",
+    "lightcycles",
+    "canvas",
+    "javascript",
+    "es6"
+  ],
+  "author": "Matthew Crigger",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^7.1.9"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Light Cycles - TRON Arcade Game Recreation | Play Online</title>
+    <meta name="description" content="Play Light Cycles, a recreation of the classic TRON 1982 arcade game. Challenge AI opponents in this retro-futuristic light cycle racing game.">
+    <meta name="keywords" content="Light Cycles, TRON game, arcade game, retro gaming, light cycles game, browser game, online game">
+    <meta name="author" content="Matthew Crigger">
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="/" id="canonical-link">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Light Cycles" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Light Cycles - TRON Arcade Game Recreation">
+    <meta property="og:description" content="Play Light Cycles, a recreation of the classic TRON 1982 arcade game. Challenge AI opponents.">
+    <meta property="og:site_name" content="Light Cycles">
+    <meta property="og:image" content="/media/opengraph-image.png">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Light Cycles - TRON Arcade Game Recreation">
+    <meta name="twitter:description" content="Play Light Cycles, a recreation of the classic TRON 1982 arcade game. Challenge AI opponents.">
+    <meta name="twitter:image" content="/media/twitter-image.png">
+    <link rel="stylesheet" href="/css/styles.css">
+  </head>
+
+  <body>
+    <main class="main">
+      <section class="menu menu--visible" aria-label="Game menu">
+        <h1>Light Cycles</h1>
+        <p class="menu__instructions">
+          An attempt of a recreation of the TRON arcade game light cycles.
+          Avoid the walls and trails of light left by <span class="player--blue">you</span> and the <span class="player--red">enemy</span> opponent.
+        </p>
+        <p class="menu__instructions">
+          <strong>The AI is very shoddy and under constant development.</strong>
+        </p>
+        <!-- Game Setup Form -->
+        <form id="game-setup-form" class="game-setup-form">
+          <div class="form-section">
+            <fieldset class="form-field difficulty-selection">
+              <legend class="difficulty-selection__title">Select Difficulty</legend>
+              <div class="difficulty-selection__buttons">
+                <label class="veryEasy difficulty-selection__btn" tabindex="0">
+                  <input type="radio" name="difficulty" value="veryEasy" class="difficulty-selection__radio" tabindex="-1">
+                  <span class="difficulty-selection__text">Very Easy</span>
+                </label>
+
+                <label class="easy difficulty-selection__btn" tabindex="0">
+                  <input type="radio" name="difficulty" value="easy" class="difficulty-selection__radio" tabindex="-1" checked>
+                  <span class="difficulty-selection__text">Easy</span>
+                </label>
+
+                <label class="medium difficulty-selection__btn" tabindex="0">
+                  <input type="radio" name="difficulty" value="medium" class="difficulty-selection__radio" tabindex="-1">
+                  <span class="difficulty-selection__text">Medium</span>
+                </label>
+
+                <label class="hard difficulty-selection__btn" tabindex="0">
+                  <input type="radio" name="difficulty" value="hard" class="difficulty-selection__radio" tabindex="-1">
+                  <span class="difficulty-selection__text">Hard</span>
+                </label>
+
+                <label class="veryHard difficulty-selection__btn" tabindex="0">
+                  <input type="radio" name="difficulty" value="veryHard" class="difficulty-selection__radio" tabindex="-1">
+                  <span class="difficulty-selection__text">Very Hard</span>
+                </label>
+              </div>
+
+              <!-- Dynamic difficulty description -->
+              <p data-difficulty-description class="form-hint" aria-live="polite"></p>
+            </fieldset>
+
+            <div class="form-field player--blue">
+              <label for="player1-name" class="form-field__label">Your Name:</label>
+              <input type="text" id="player1-name" name="player1-name" class="form-field__input" placeholder="Blue Team" maxlength="12">
+            </div>
+
+            <p class="form-hint">
+              Control your light cycle with Arrow Keys or WASD
+            </p>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="start-game-btn" class="btn btn--primary btn--disabled" disabled>START GAME</button>
+        </form>
+      </section>
+
+      <div class="game">
+        <section class="game__info hidden" aria-label="Game information">
+          <div class="game__info-row">
+            <div class="score" aria-label="Score tracking">
+              <h2 class="score__title">Wins</h2>
+              <div class="score__display">
+                <span class="score__wins--blue">0</span>
+                <span class="score__separator">-</span>
+                <span class="score__wins--red">0</span>
+              </div>
+            </div>
+
+            <div class="difficulty" aria-label="Current difficulty">
+              <h2 class="difficulty__title">Difficulty</h2>
+              <div class="difficulty__current">
+                <span id="current-difficulty-text">Easy</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="game__area" aria-label="Game canvas">
+          <div class="game__canvas-container">
+            <canvas id="gameCanvas" class="canvas" width="800" height="560"></canvas>
+            <section class="overlay overlay--pause hidden" aria-label="Game paused">
+              <div class="overlay__content">
+                <h1>Game Paused</h1>
+                <p class="overlay__instructions">
+                  Press <span class="key-highlight">SPACE</span> to resume or choose an option below
+                </p>
+                <div class="overlay__buttons">
+                  <button data-action="resume-game" class="btn btn--primary">RESUME</button>
+                  <button data-action="restart-game" class="btn btn--secondary">RESTART</button>
+                  <button data-action="return-to-main-menu" class="btn btn--secondary">MAIN MENU</button>
+                </div>
+              </div>
+            </section>
+            <section class="countdown countdown--hidden" aria-label="Game starting countdown">
+              <div class="countdown__display">
+                <span class="countdown__number">3</span>
+              </div>
+            </section>
+            <section class="overlay overlay--end hidden" aria-label="Game results">
+              <div class="overlay__content">
+                <h1 id="dynamic-result-message">Game Over</h1>
+                <p id="dynamic-result-subtitle" class="result__subtitle"></p>
+                <div class="overlay__buttons">
+                  <button data-action="replay-game" class="btn btn--primary">PLAY AGAIN</button>
+                  <button data-action="return-to-main-menu" class="btn btn--secondary">MAIN MENU</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- Mobile Controls Section -->
+        <section class="mobile-controls hidden" aria-label="Mobile game controls">
+          <div class="mobile-controls__grid">
+            <!-- Row 1: Empty, Up, Pause -->
+            <div class="mobile-controls__empty"></div>
+            <button class="mobile-controls__btn" data-action="move-direction" data-direction="N" aria-label="Move up">
+              <span class="mobile-controls__icon">↑</span>
+            </button>
+            <button class="mobile-controls__btn mobile-controls__btn--pause" data-action="toggle-pause" aria-label="Pause game">
+              <span class="mobile-controls__icon">⏸</span>
+            </button>
+
+            <!-- Row 2: Left, Down, Right -->
+            <button class="mobile-controls__btn" data-action="move-direction" data-direction="W" aria-label="Move left">
+              <span class="mobile-controls__icon">←</span>
+            </button>
+            <button class="mobile-controls__btn" data-action="move-direction" data-direction="S" aria-label="Move down">
+              <span class="mobile-controls__icon">↓</span>
+            </button>
+            <button class="mobile-controls__btn" data-action="move-direction" data-direction="E" aria-label="Move right">
+              <span class="mobile-controls__icon">→</span>
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Light Cycles Game -->
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>
