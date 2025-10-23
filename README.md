@@ -2,6 +2,8 @@
 
 A modern recreation of the classic TRON (1982) arcade game Light Cycles, built with vanilla JavaScript and Vite.
 
+**Play online:** https://lightcycles.matthewrcrigger.com/
+
 ## Features
 
 - Play against AI opponents with sophisticated pathfinding algorithms
@@ -210,7 +212,3 @@ This project is a fan-created recreation of the Light Cycles minigame for educat
 - AI algorithms inspired by Google AI Challenge 2010
 - Slapped together by Matthew Crigger and Claude Code
 - Play tested by Matthew Crigger, his daughter, and friends.
-
----
-
-**Play online:** https://lightcycles.matthewrcrigger.com/
