@@ -1,8 +1,9 @@
 /* GRID Design System — tokens + baseline, vendored for Light Cycles.
-   Source: an internal design system
-   (design tokens and the base stylesheet this app uses)
 
-   Do not hand-edit values here. If the system moves, re-pull it.
+   Vendored from an internal design system. These values are a snapshot: do
+   not hand-edit them here, and re-vendor from the source of record if the
+   system moves.
+
    Fonts: Rajdhani + Space Mono, both SIL OFL 1.1 — see public/fonts/OFL-*.txt */
 
 /* ── fonts ─────────────────────────────────────────────────────────────── */

@@ -15,6 +15,7 @@ import { GAME_CONFIG, difficultySettings } from './config.js';
 import { View, updateDifficultyDisplay } from './game-controller.js';
 import { updateDifficultyDescription, getSelectedDifficulty } from './difficulty-description.js';
 import './ai-integration.js'; // Load AI integration system
+import { telemetry } from './grid-telemetry.js';
 
 /**
  * Global game state object containing current game information.
@@ -196,6 +197,9 @@ const gameActions = {
       player2Name: "Computer", // AI opponent
     };
 
+    // The user's handle labels their own score row.
+    telemetry.setPlayerLabel(playerName);
+
     // Clean up existing game
     if (gameState.view) {
       gameState.view.cleanup();
@@ -312,8 +316,9 @@ const gameActions = {
     // Update score display
     const redWinsElement = document.querySelector(".score__wins--red");
     const blueWinsElement = document.querySelector(".score__wins--blue");
-    if (redWinsElement) redWinsElement.textContent = "0";
-    if (blueWinsElement) blueWinsElement.textContent = "0";
+    if (redWinsElement) redWinsElement.textContent = "00";
+    if (blueWinsElement) blueWinsElement.textContent = "00";
+    telemetry.setRound(1);
 
     // Hide game screen and overlays
     this.hideGameScreen();
@@ -361,6 +366,8 @@ const gameActions = {
     if (game) game.classList.remove("game--active");
     if (gameInfo) gameInfo.classList.add("hidden");
     if (mobileControls) mobileControls.classList.add("hidden");
+
+    telemetry.reset();
   },
 
   /**
@@ -467,21 +474,22 @@ const endScreenResults = {
   getResult(winner, playerNames) {
     const winnerName = playerNames.player1Name;
 
+    // Voice: terse, declarative, present tense. State what is true and what
+    // happened. No exclamation, no congratulation, no consolation — the
+    // system reports, it does not celebrate or apologise.
     if (winner === "Player 1") {
-      // Player wins
       return {
-        title: `Victory, ${colorCodePlayerName(winnerName, 1)}!`,
-        subtitle: "The computer has been derezzed",
+        title: "PROGRAM DEREZZED",
+        subtitle: `${colorCodePlayerName(winnerName, 1)} holds the grid.`,
         messageClass: "result-message--victory",
       };
-    } else {
-      // Computer wins
-      return {
-        title: "Game Over",
-        subtitle: `${colorCodePlayerName(playerNames.player1Name, 1)} was derezzed`,
-        messageClass: "result-message--defeat",
-      };
     }
+
+    return {
+      title: "CYCLE DEREZZED",
+      subtitle: `${colorCodePlayerName(playerNames.player1Name, 1)} hit a wall of light.`,
+      messageClass: "result-message--defeat",
+    };
   },
 };
 

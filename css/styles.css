@@ -44,8 +44,6 @@ body {
   width: 100%;
   overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ── type roles ────────────────────────────────────────────────────────── */
@@ -79,44 +77,44 @@ p { font-size: var(--text-md); margin: 0; }
 
 /* ── layout ────────────────────────────────────────────────────────────── */
 
+/* One cell. The menu and the game stack in it; only one is ever visible. */
 .main {
-  flex: 1;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: var(--space-4);
-  padding-left: max(var(--space-4), var(--safe-area-inset-left));
-  padding-right: max(var(--space-4), var(--safe-area-inset-right));
+  min-width: 0;
   width: 100%;
+  overflow: hidden;
 }
 
 /* ── menu ──────────────────────────────────────────────────────────────── */
 
-/* The one double frame in the app: it wraps the menu, the screen shell.
-   Inside it, single hairlines only. */
+/* The shell already draws the view's one double frame, so the menu is a
+   single-hairline panel inside it. Nesting a second double frame here would
+   turn the screen to corduroy. */
 .menu {
   max-width: 640px;
   width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
   text-align: center;
-
-  background: var(--surface-0);
-  border: var(--panel-border-width) solid var(--border-strong);
-  border-radius: var(--panel-radius-outer);
-  padding: var(--grid-frame-inset);
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 .menu--visible { display: block; }
 .menu--hidden  { display: none; }
 
 .menu__frame {
-  border: var(--panel-border-width) solid var(--border-strong);
-  border-radius: var(--panel-radius-inner);
-  padding: var(--space-6) var(--space-5);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-0);
+  background: var(--surface-1);
+  padding: var(--space-7) var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
   align-items: center;
 }
 
@@ -210,14 +208,18 @@ p { font-size: var(--text-md); margin: 0; }
   font-style: normal;
 }
 
+/* A hint is a sentence a person wrote, so it takes the display family.
+   Mono is reserved for what a machine emitted — a prose line set in Space
+   Mono reads as data and loses its character as guidance. */
 .form-hint {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: var(--track-mono);
-  line-height: var(--leading-mono);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-body);
+  line-height: var(--leading-normal);
   color: var(--text-meta);
   text-align: center;
   margin: 0;
+  max-width: 52ch;
 }
 
 /* ── difficulty selection ──────────────────────────────────────────────── */
@@ -425,140 +427,186 @@ p { font-size: var(--text-md); margin: 0; }
   color: var(--text-disabled);
 }
 
+/* ── app shell ─────────────────────────────────────────────────────────── */
+
+/* The whole surface is ONE grid with explicit tracks. Nothing here negotiates
+   its own size: the rail and the StatusBar are auto (content) rows, the
+   content area takes 1fr, and `min-height: 0` on that row is what stops a
+   tall child from pushing the StatusBar off-screen.
+
+   This replaces a flex chain whose children each claimed `flex: 1`, which
+   let two panels resolve to overlapping boxes at some viewport sizes. */
+.shell {
+  position: fixed;
+  inset: 0;
+  padding: var(--space-3);
+  padding-top: max(var(--space-3), var(--safe-area-inset-top));
+  padding-bottom: max(var(--space-3), var(--safe-area-inset-bottom));
+  padding-left: max(var(--space-3), var(--safe-area-inset-left));
+  padding-right: max(var(--space-3), var(--safe-area-inset-right));
+
+  background: var(--surface-0);
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 0;
+}
+
+/* The double frame: outer line, frame-gap of void, inner line. */
+.shell::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-1);
+  border: var(--stroke-1) solid var(--border-strong);
+  pointer-events: none;
+}
+
+.shell__frame {
+  position: relative;
+  margin: var(--frame-gap);
+  border: var(--stroke-1) solid var(--border-strong);
+  padding: var(--space-3);
+  max-width: var(--page-max);
+  width: 100%;
+  margin-inline: auto;
+
+  /* rail · content · statusbar. The content row is the only flexible one. */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+/* Top rail: wordmark · leader · state badge. */
+.rail {
+  display: grid;
+  grid-template-columns: auto minmax(var(--space-4), 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+}
+
+.rail__mark { font-size: var(--text-xl); }
+
+/* ── field panel ───────────────────────────────────────────────────────── */
+
+/* head · body. The body row is bounded, so the canvas can never push the
+   panel past its own border. */
+.field {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+}
+
+.field__body {
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-2);
+  overflow: hidden;
+}
+
 /* ── game shell ────────────────────────────────────────────────────────── */
 
+/* info · field · controls. Explicit tracks, so the field can never overlap
+   the readouts above it however tall the content gets. */
 .game {
   display: none;
-  flex-direction: column;
-  align-items: center;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: var(--panel-gap);
   max-width: 880px;
   width: 100%;
   height: 100%;
-  margin: 0 auto;
   min-height: 0;
+  min-width: 0;
+  margin: 0 auto;
 }
 
-.game--active { display: flex; }
+.game--active { display: grid; }
 
-.game__info { width: 100%; }
+/* On a device with a real pointer there are no touch controls, so the grid
+   is two rows and nothing is reserved for them. Gating on `pointer` rather
+   than width alone means a narrow laptop window stays a laptop. */
+@media (pointer: fine) {
+  .game { grid-template-rows: auto minmax(0, 1fr); }
+  .mobile-controls { display: none !important; }
+}
+
+.game__info { width: 100%; min-width: 0; }
 
 .game__info-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0,1fr) rather than 1fr: a bare 1fr track has an auto minimum, so
+     a nowrap panel title would widen the column instead of truncating. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--panel-gap);
   width: 100%;
-  margin: 0 auto;
+  align-items: stretch;
 }
+
+/* The readouts are a status strip, not the subject of the screen — the field
+   is. Dense padding and inline key/value rows keep them to about one control
+   height so the canvas gets the rest. */
+.game__info .g-panel__content { padding: var(--space-2) var(--panel-pad-dense); }
+
+.game__info .g-kv {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1) var(--space-5);
+}
+
+.telemetry__meter { margin-top: var(--space-2); }
+
+/* Keep both readout panels the same height whatever they contain. */
+.score,
+.telemetry { min-width: 0; }
 
 .game__area {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   width: 100%;
   min-height: 0;
-  flex: 1;
+  min-width: 0;
 }
 
+/* The canvas and every overlay share one cell, so they always align.
+   The container is bounded on BOTH axes; the canvas is square, so whichever
+   axis is scarcer decides its size. */
 .game__canvas-container {
   display: grid;
-  grid-template: 1fr / 1fr;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
   width: 100%;
+  height: 100%;
   min-height: 0;
-  /* The field is bounded by whatever height is left after the readout row
-     and the touch controls, at EVERY width. The canvas is square (a 100x100
-     cell board), so constraining height also constrains width. */
-  max-height: 100%;
-  justify-items: center;
+  min-width: 0;
 }
 
-/* The canvas carries the field's aspect ratio (square: 100x100 cells) so it
-   can be sized by height without the container knowing its pixel dimensions. */
+/* The board is 100x100 cells, so the field is square. Constraining both
+   axes and letting aspect-ratio resolve the rest means the canvas fits
+   whichever dimension is scarcer, with no overflow on either. */
 .canvas {
   aspect-ratio: 1 / 1;
+  max-width: 100%;
   max-height: 100%;
   width: auto;
-  max-width: 100%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
   object-fit: contain;
 }
 
-/* ── readouts: label · dotted leader · mono value ──────────────────────── */
+/* ── readouts ──────────────────────────────────────────────────────────── */
 
-/* A panel is defined by its edge, not its fill. */
-.score,
-.difficulty {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-
-  padding: var(--space-2) var(--panel-pad-dense);
-  border: var(--stroke-1) solid var(--border-faint);
-  border-radius: var(--radius-0);
-  background: var(--surface-1);
-  text-align: left;
-}
-
-.score__title,
-.difficulty__title {
-  font-family: var(--font-display);
-  font-size: var(--type-label-size);
-  font-weight: var(--type-label-weight);
-  letter-spacing: var(--type-label-track);
-  line-height: var(--leading-flat);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 0;
-  flex: none;
-}
-
-/* The dotted leader, reaching from each label to its value. */
-.score__title::after,
-.difficulty__title::after {
-  content: "";
-  display: none;
-}
-
-.score::after,
-.difficulty::after { content: none; }
-
-.score__leader,
-.difficulty__leader {
-  flex: 1;
-  min-width: 8px;
-  border-top: var(--stroke-1) var(--leader-style) var(--leader-color);
-  transform: translateY(1px);
-}
-
-/* Values are machine output: mono, tabular, exact. A changing score must
-   never reflow the row it sits in. */
-.score__display {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  flex: none;
-
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--track-mono);
-  line-height: var(--leading-flat);
-}
+/* WINS and TELEMETRY are real Panels now; only the value colours and the
+   telemetry meter spacing are app-specific. */
 
 .score__wins--blue { color: var(--player-blue); }
 .score__wins--red  { color: var(--player-red); }
-.score__separator  { color: var(--text-meta); }
 
-.difficulty__current {
-  flex: none;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--track-mono);
-  line-height: var(--leading-flat);
-  color: var(--accent);
-  text-transform: lowercase;
-}
+/* The difficulty badge sits in the field panel's header right slot. */
+.difficulty__current { text-transform: lowercase; }
 
 /* ── canvas ────────────────────────────────────────────────────────────── */
 
@@ -575,16 +623,19 @@ p { font-size: var(--text-md); margin: 0; }
 /* ── overlays ──────────────────────────────────────────────────────────── */
 
 /* Dialogs appear; they do not fade. dur-overlay is 0ms. */
+/* An overlay covers the canvas exactly: same cell, same square box. */
 .overlay {
   grid-area: 1 / 1;
   display: none;
   place-items: center;
   border-radius: var(--radius-0);
   aspect-ratio: 1 / 1;
+  max-width: 100%;
   max-height: 100%;
   width: auto;
-  max-width: 100%;
-  justify-self: center;
+  height: auto;
+  place-self: center;
+  overflow: hidden;
 }
 
 /* The visible state must beat `.hidden`, which the markup ships on both
@@ -616,7 +667,10 @@ p { font-size: var(--text-md); margin: 0; }
   border-radius: var(--radius-0);
   background: var(--surface-1);
   box-shadow: var(--elev-dialog);
-  max-width: 90%;
+  /* Wide enough that the result line does not wrap mid-phrase; the dialog is
+     short by construction, so it sizes to content rather than scrolling. */
+  width: max-content;
+  max-width: min(92%, 440px);
 }
 
 .overlay__content h1 {
@@ -656,6 +710,7 @@ p { font-size: var(--text-md); margin: 0; }
   color: var(--text-secondary);
   margin-top: var(--space-2);
   text-align: center;
+  text-wrap: balance;
 }
 
 /* ── keycap ────────────────────────────────────────────────────────────── */
@@ -688,10 +743,11 @@ p { font-size: var(--text-md); margin: 0; }
   display: none;
   place-items: center;
   aspect-ratio: 1 / 1;
+  max-width: 100%;
   max-height: 100%;
   width: auto;
-  max-width: 100%;
-  justify-self: center;
+  height: auto;
+  place-self: center;
   z-index: 20;
   border-radius: var(--radius-0);
   background: transparent;
@@ -831,6 +887,18 @@ p { font-size: var(--text-md); margin: 0; }
   }
 }
 
+/* Below this width the two-column readouts cannot fit two nowrap key/value
+   pairs per row, so they collapse to one column and the panels stack. */
+@media (max-width: 720px) {
+  .game__info-row { grid-template-columns: minmax(0, 1fr); }
+  .game__info .g-kv { grid-template-columns: minmax(0, 1fr); }
+
+  /* Only the primary readouts survive at this width; grid load is the one
+     that still reads at a glance. */
+  .telemetry .g-kv { display: none; }
+  .telemetry__meter { margin-top: 0; }
+}
+
 @media (max-width: 768px) {
   .main { padding: var(--space-2); overflow: hidden; }
 
@@ -846,8 +914,10 @@ p { font-size: var(--text-md); margin: 0; }
   .menu--visible .mobile-controls { display: none; }
 }
 
+/* Width fallback for browsers without pointer-media support. */
 @media (min-width: 769px) {
   .mobile-controls { display: none !important; }
+  .game { grid-template-rows: auto minmax(0, 1fr); }
 }
 
 @media (max-width: 480px) {

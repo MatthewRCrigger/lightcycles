@@ -28,50 +28,69 @@
     <meta name="twitter:description" content="Play Light Cycles, a recreation of the classic TRON 1982 arcade game. Challenge AI opponents.">
     <meta name="twitter:image" content="/media/twitter-image.png">
     <link rel="stylesheet" href="/css/grid-tokens.css">
+    <link rel="stylesheet" href="/css/grid-components.css">
     <link rel="stylesheet" href="/css/styles.css">
   </head>
 
   <body data-panel-profile="sharp">
-    <main class="main">
+    <!-- The double frame wraps the whole surface. Used ONCE, at the
+         outermost level; inside it, single hairlines only. -->
+    <div class="shell">
+      <div class="shell__frame">
+
+        <!-- Top rail: the wordmark IS the identity. GRID has no logo mark. -->
+        <header class="rail">
+          <span class="g-wordmark rail__mark">
+            <span class="g-wordmark__head">LIGHT</span><span class="g-wordmark__tail">CYCLES</span>
+          </span>
+          <span class="g-leader" aria-hidden="true"></span>
+          <span class="g-badge g-badge--live" data-shell-state>
+            <span class="g-badge__dot" aria-hidden="true"></span>
+            <span data-shell-state-text>STANDBY</span>
+          </span>
+        </header>
+
+        <main class="main">
       <section class="menu menu--visible" aria-label="Game menu">
         <div class="menu__frame">
-        <h1>Light Cycles</h1>
+        <h1>ENTER THE GRID</h1>
         <p class="menu__instructions">
-          An attempt of a recreation of the TRON arcade game light cycles.
-          Avoid the walls and trails of light left by <span class="player--blue">you</span> and the <span class="player--red">enemy</span> opponent.
+          Two cycles, one grid. Each leaves a wall of light behind it.
+          Touch a wall — <span class="player--blue">yours</span> or the
+          <span class="player--red">program</span>'s — and you derez.
         </p>
         <p class="menu__instructions">
-          <strong>The AI is very shoddy and under constant development.</strong>
+          <strong>Opponent routine is under active development.</strong>
         </p>
         <!-- Game Setup Form -->
         <form id="game-setup-form" class="game-setup-form">
           <div class="form-section">
             <fieldset class="form-field difficulty-selection">
-              <legend class="difficulty-selection__title">Select Difficulty</legend>
+              <legend class="difficulty-selection__title">OPPONENT .LEVEL</legend>
               <div class="difficulty-selection__buttons">
-                <label class="veryEasy difficulty-selection__btn" tabindex="0">
+                <label class="veryEasy difficulty-selection__btn g-chip" tabindex="0">
                   <input type="radio" name="difficulty" value="veryEasy" class="difficulty-selection__radio" tabindex="-1">
-                  <span class="difficulty-selection__text">Very Easy</span>
+                  <span class="difficulty-selection__text">very easy</span>
                 </label>
 
-                <label class="easy difficulty-selection__btn" tabindex="0">
+                <label class="easy difficulty-selection__btn g-chip" tabindex="0">
                   <input type="radio" name="difficulty" value="easy" class="difficulty-selection__radio" tabindex="-1" checked>
-                  <span class="difficulty-selection__text">Easy</span>
+                  <span class="difficulty-selection__text">easy</span>
                 </label>
 
-                <label class="medium difficulty-selection__btn" tabindex="0">
+                <label class="medium difficulty-selection__btn g-chip" tabindex="0">
                   <input type="radio" name="difficulty" value="medium" class="difficulty-selection__radio" tabindex="-1">
-                  <span class="difficulty-selection__text">Medium</span>
+                  <span class="difficulty-selection__text">medium</span>
                 </label>
 
-                <label class="hard difficulty-selection__btn" tabindex="0">
+                <label class="hard difficulty-selection__btn g-chip" tabindex="0">
                   <input type="radio" name="difficulty" value="hard" class="difficulty-selection__radio" tabindex="-1">
-                  <span class="difficulty-selection__text">Hard</span>
+                  <span class="difficulty-selection__text">hard</span>
                 </label>
 
-                <label class="veryHard difficulty-selection__btn" tabindex="0">
+                <label class="veryHard difficulty-selection__btn g-chip" tabindex="0">
                   <input type="radio" name="difficulty" value="veryHard" class="difficulty-selection__radio" tabindex="-1">
-                  <span class="difficulty-selection__text">Very Hard</span>
+                  <span class="difficulty-selection__text">very hard</span>
                 </label>
               </div>
 
@@ -80,17 +99,17 @@
             </fieldset>
 
             <div class="form-field player--blue">
-              <label for="player1-name" class="form-field__label">Your Name:</label>
-              <input type="text" id="player1-name" name="player1-name" class="form-field__input" placeholder="Blue Team" maxlength="12">
+              <label for="player1-name" class="form-field__label">USER .HANDLE</label>
+              <input type="text" id="player1-name" name="player1-name" class="form-field__input" placeholder="user" maxlength="12">
             </div>
 
             <p class="form-hint">
-              Control your light cycle with Arrow Keys or WASD
+              Steer with <span class="key-highlight">←</span> <span class="key-highlight">↑</span> <span class="key-highlight">↓</span> <span class="key-highlight">→</span> or <span class="key-highlight">W</span> <span class="key-highlight">A</span> <span class="key-highlight">S</span> <span class="key-highlight">D</span>
             </p>
           </div>
 
           <!-- Submit Button -->
-          <button type="submit" id="start-game-btn" class="btn btn--primary btn--disabled" disabled>START GAME</button>
+          <button type="submit" id="start-game-btn" class="btn btn--primary btn--disabled" disabled>RUN .PROGRAM</button>
         </form>
         </div>
       </section>
@@ -98,39 +117,114 @@
       <div class="game">
         <section class="game__info hidden" aria-label="Game information">
           <div class="game__info-row">
-            <div class="score" aria-label="Score tracking">
-              <h2 class="score__title">Wins</h2>
-              <span class="score__leader" aria-hidden="true"></span>
-              <div class="score__display">
-                <span class="score__wins--blue">0</span>
-                <span class="score__separator">-</span>
-                <span class="score__wins--red">0</span>
-              </div>
-            </div>
 
-            <div class="difficulty" aria-label="Current difficulty">
-              <h2 class="difficulty__title">Difficulty</h2>
-              <span class="difficulty__leader" aria-hidden="true"></span>
-              <div class="difficulty__current">
-                <span id="current-difficulty-text">Easy</span>
+            <!-- MATCH .STATE — passive panel, IndexCounter in the right slot -->
+            <section class="g-panel g-panel--subtle score" aria-label="Score">
+              <div class="g-panel__head">
+                <div class="g-panel-head">
+                  <span class="g-panel-head__label">MATCH .STATE</span>
+                  <span class="g-leader" aria-hidden="true"></span>
+                  <span class="g-panel-head__right">
+                    <span class="g-index" data-round-counter>
+                      <span data-round-current>001</span><span class="g-index__sep">|</span><span>&#8734;</span>
+                    </span>
+                  </span>
+                </div>
               </div>
-            </div>
+              <div class="g-panel__body">
+                <div class="g-panel__content">
+                  <dl class="g-kv g-kv--dense">
+                    <div class="g-kv__row">
+                      <dt class="g-kv__key" data-player-label>you</dt>
+                      <span class="g-kv__leader" aria-hidden="true"></span>
+                      <dd class="g-kv__val score__wins--blue">00</dd>
+                    </div>
+                    <div class="g-kv__row">
+                      <dt class="g-kv__key">program</dt>
+                      <span class="g-kv__leader" aria-hidden="true"></span>
+                      <dd class="g-kv__val score__wins--red">00</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+            </section>
+
+            <!-- CYCLE .TELEMETRY — live machine readout -->
+            <section class="g-panel g-panel--subtle telemetry" aria-label="Cycle telemetry">
+              <div class="g-panel__head">
+                <div class="g-panel-head">
+                  <span class="g-panel-head__label">CYCLE .TELEMETRY</span>
+                  <span class="g-leader" aria-hidden="true"></span>
+                  <span class="g-panel-head__right">
+                    <span class="g-badge" data-cycle-state>
+                      <span class="g-badge__dot" aria-hidden="true"></span>
+                      <span data-cycle-state-text>STANDBY</span>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <div class="g-panel__body">
+                <div class="g-panel__content">
+                  <dl class="g-kv g-kv--dense">
+                    <div class="g-kv__row">
+                      <dt class="g-kv__key">vector</dt>
+                      <span class="g-kv__leader" aria-hidden="true"></span>
+                      <dd class="g-kv__val" data-telem-vector>--</dd>
+                    </div>
+                    <div class="g-kv__row">
+                      <dt class="g-kv__key">trail</dt>
+                      <span class="g-kv__leader" aria-hidden="true"></span>
+                      <dd class="g-kv__val" data-telem-trail>0000</dd>
+                    </div>
+                  </dl>
+
+                  <div class="g-meter telemetry__meter" role="meter"
+                       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                       aria-label="Grid occupancy" data-occupancy-meter>
+                    <div class="g-meter__head">
+                      <span class="g-meter__label">grid .load</span>
+                      <span class="g-meter__leader" aria-hidden="true"></span>
+                      <span class="g-meter__value">
+                        <span data-occupancy-value>0.0</span><span class="g-meter__unit">%</span>
+                      </span>
+                    </div>
+                    <div class="g-meter__track" aria-hidden="true" data-occupancy-track></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
           </div>
         </section>
 
         <section class="game__area" aria-label="Game canvas">
+          <!-- The field is a machine within the screen: its own panel, with
+               the difficulty in the header's right slot. -->
+          <div class="g-panel field">
+            <div class="g-panel__head field__head">
+              <div class="g-panel-head">
+                <span class="g-panel-head__label">GRID .FIELD</span>
+                <span class="g-leader" aria-hidden="true"></span>
+                <span class="g-panel-head__right">
+                  <span class="g-badge g-badge--accent difficulty__current">
+                    <span id="current-difficulty-text">easy</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="g-panel__body field__body">
           <div class="game__canvas-container">
             <canvas id="gameCanvas" class="canvas" width="800" height="800"></canvas>
             <section class="overlay overlay--pause hidden" aria-label="Game paused">
               <div class="overlay__content">
-                <h1>Game Paused</h1>
+                <h1>PROGRAM HALTED</h1>
                 <p class="overlay__instructions">
-                  Press <span class="key-highlight">SPACE</span> to resume or choose an option below
+                  <span class="key-highlight">SPACE</span> resumes.
                 </p>
                 <div class="overlay__buttons">
                   <button data-action="resume-game" class="btn btn--primary">RESUME</button>
-                  <button data-action="restart-game" class="btn btn--secondary">RESTART</button>
-                  <button data-action="return-to-main-menu" class="btn btn--secondary">MAIN MENU</button>
+                  <button data-action="restart-game" class="btn btn--secondary">RESTART .MATCH</button>
+                  <button data-action="return-to-main-menu" class="btn btn--secondary">END .PROGRAM</button>
                 </div>
               </div>
             </section>
@@ -141,14 +235,16 @@
             </section>
             <section class="overlay overlay--end hidden" aria-label="Game results">
               <div class="overlay__content">
-                <h1 id="dynamic-result-message">Game Over</h1>
+                <h1 id="dynamic-result-message">MATCH ENDED</h1>
                 <p id="dynamic-result-subtitle" class="result__subtitle"></p>
                 <div class="overlay__buttons">
-                  <button data-action="replay-game" class="btn btn--primary">PLAY AGAIN</button>
-                  <button data-action="return-to-main-menu" class="btn btn--secondary">MAIN MENU</button>
+                  <button data-action="replay-game" class="btn btn--primary">RUN .AGAIN</button>
+                  <button data-action="return-to-main-menu" class="btn btn--secondary">END .PROGRAM</button>
                 </div>
               </div>
             </section>
+          </div>
+            </div>
           </div>
         </section>
 
@@ -177,7 +273,25 @@
           </div>
         </section>
       </div>
-    </main>
+        </main>
+
+        <!-- StatusBar: machine state only, never a human sentence. -->
+        <footer class="g-statusbar" data-statusbar>
+          <span class="g-statusbar__seg">
+            <span data-status-left>sys .ready</span>
+          </span>
+          <span class="g-statusbar__fill" aria-hidden="true"></span>
+          <span class="g-statusbar__seg">
+            <span data-status-center>--</span>
+          </span>
+          <span class="g-statusbar__fill" aria-hidden="true"></span>
+          <span class="g-statusbar__seg">
+            <span data-status-right>00 fps</span>
+          </span>
+        </footer>
+
+      </div>
+    </div>
 
     <!-- Light Cycles Game -->
     <script type="module" src="/js/main.js"></script>

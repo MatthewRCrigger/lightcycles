@@ -8,6 +8,7 @@ import { Board } from './board.js';
 import { CanvasRenderer } from './canvas-renderer.js';
 import { PerformanceMonitor } from './performance-monitor.js';
 import { SoundGenerator } from './sound-generator.js';
+import { telemetry } from './grid-telemetry.js';
 
 
 /**
@@ -159,8 +160,13 @@ class View {
       const frameEndTime = performance.now();
       this.performanceMonitor.update(frameEndTime - frameStartTime);
 
+      // Sample machine state into the GRID readouts (throttled internally).
+      telemetry.sample(this.board, this.performanceMonitor, frameEndTime);
+
       this.animationId = requestAnimationFrame(gameLoop);
     };
+
+    telemetry.setStatus({ center: 'grid 100x100', tone: 'accent' });
 
     // Initialize collision grid immediately so rendering works properly
     this.board.initializeCollisionGrid();
@@ -341,6 +347,15 @@ class View {
 
     const winner = this.#checkWinner();
 
+    // A loss is the one alarm state on this surface.
+    const playerWon = winner === 'Player 1';
+    telemetry.setState(playerWon ? 'RESOLVED' : 'DEREZZED', playerWon ? 'success' : 'danger');
+    telemetry.setStatus({
+      left: playerWon ? 'match .won' : 'match .lost',
+      center: 'program halted',
+      tone: playerWon ? 'accent' : 'danger',
+    });
+
     // Use dynamic end screen rendering with player names
     window.renderEndScreen(winner, window.gameState.playerNames);
 
@@ -366,8 +381,12 @@ class View {
       const redWinsElement = document.querySelector(".score__wins--red");
       const blueWinsElement = document.querySelector(".score__wins--blue");
 
-      if (redWinsElement) redWinsElement.textContent = window.wins.red;
-      if (blueWinsElement) blueWinsElement.textContent = window.wins.blue;
+      // Counters are zero-padded so a changing number never reflows its row.
+      if (redWinsElement) redWinsElement.textContent = String(window.wins.red).padStart(2, "0");
+      if (blueWinsElement) blueWinsElement.textContent = String(window.wins.blue).padStart(2, "0");
+
+      // The round counter counts matches played, not wins.
+      telemetry.setRound(window.wins.red + window.wins.blue + 1);
     }
   }
 
@@ -432,6 +451,8 @@ class View {
 
     if (pauseOverlay) {
       if (this.isPaused) {
+        telemetry.setState('HALTED', 'accent');
+        telemetry.setStatus({ left: 'match .halted', tone: 'accent' });
         pauseOverlay.classList.remove("hidden");
         pauseOverlay.classList.add("overlay--visible");
         // Stop all engine sounds when paused
@@ -439,6 +460,8 @@ class View {
           this.soundGenerator.stopAll();
         }
       } else {
+        telemetry.setState('RUNNING', 'live');
+        telemetry.setStatus({ left: 'match .active', tone: 'accent' });
         pauseOverlay.classList.remove("overlay--visible");
         // Resume engine sounds when unpaused
         [...this.board.playerTeam, ...this.board.enemyTeam].forEach(cycle => {
@@ -479,7 +502,10 @@ class View {
       countdownOverlay.classList.add("countdown--visible");
 
       // No animation on the countdown. The GRID system is still: the number
-      // changes, it does not perform. (See "Elevation, transparency, motion".)
+      // changes, it does not perform. Where you would reach for an
+      // indeterminate spinner, print a running count instead.
+      telemetry.setState('INITIALISING', 'accent');
+      telemetry.setStatus({ left: `init t-${this.countdownNumber}`, tone: 'accent' });
 
       if (GAME_CONFIG.DEBUG.LOG_GAME_EVENTS) {
         console.log(
@@ -494,6 +520,10 @@ class View {
    * Hides the countdown overlay.
    */
   hideCountdown() {
+    // The match is live from the moment the countdown clears.
+    telemetry.setState('RUNNING', 'live');
+    telemetry.setStatus({ left: 'match .active', tone: 'accent' });
+
     const countdownOverlay = document.querySelector(".countdown");
     if (countdownOverlay) {
       countdownOverlay.classList.remove("countdown--visible");
