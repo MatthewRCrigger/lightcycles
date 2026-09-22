@@ -15,15 +15,30 @@ export const GAME_CONFIG = Object.freeze({
     BLOCK_SIZE: 22,
     BORDER_SIZE: 2,
     SPRITE_SIZE_MULTIPLIER: 8,
+    // Backdrop graph paper: 24px pitch (3 cells at CELL_SIZE 8), close to the
+    // system's 32px grid-cell but aligned to the game's own grid so the
+    // hairlines land on cell boundaries instead of cutting through them.
+    GRID_PITCH: 24,
+    // Cycle name labels are machine output, so they take the mono stack.
+    LABEL_FONT:
+      '"Space Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+    LABEL_SIZE: 12,
+    LABEL_WEIGHT: 700,
   },
+  // Palette drawn from the GRID design system's signal plane. Every hue sits
+  // at OKLCH L 0.83 / C 0.14 so nothing shouts louder than anything else;
+  // danger alone drops to L 0.70 / C 0.19 so alarm reads hotter.
+  // Hex equivalents are used here because canvas fillStyle predates oklch()
+  // in some engines and these values are baked into a bitmap, not a stylesheet.
   COLORS: {
-    BLUE_RIBBON: "#24DBFF",
-    RED_RIBBON: "#FF5024",
-    RED_RIBBON_2: "#FF3040",
-    RED_RIBBON_3: "#FF1030",
-    GRID_BACKGROUND: "#000024",
-    CANVAS_BORDER: "#6D9292",
-    CANVAS_BG: "#000",
+    BLUE_RIBBON: "#44DAFF",   // signal-cyan  — the operator
+    RED_RIBBON: "#FF655A",    // signal-red   — the opponent
+    RED_RIBBON_2: "#F4BE4F",  // signal-amber — second enemy cycle
+    RED_RIBBON_3: "#D5B2FF",  // signal-violet — third enemy cycle
+    GRID_BACKGROUND: "#202a2f", // line-400   — the backdrop graph paper
+    CANVAS_BORDER: "#8fa8b4",   // line-200   — the field's hairline frame
+    CANVAS_BG: "#000000",       // surface-0  — the void
+    INK_100: "#e4f2f8",         // ink-100    — primary text on the field
   },
   DIFFICULTY: {
     VERY_EASY: {

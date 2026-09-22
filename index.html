@@ -27,12 +27,14 @@
     <meta name="twitter:title" content="Light Cycles - TRON Arcade Game Recreation">
     <meta name="twitter:description" content="Play Light Cycles, a recreation of the classic TRON 1982 arcade game. Challenge AI opponents.">
     <meta name="twitter:image" content="/media/twitter-image.png">
+    <link rel="stylesheet" href="/css/grid-tokens.css">
     <link rel="stylesheet" href="/css/styles.css">
   </head>
 
-  <body>
+  <body data-panel-profile="sharp">
     <main class="main">
       <section class="menu menu--visible" aria-label="Game menu">
+        <div class="menu__frame">
         <h1>Light Cycles</h1>
         <p class="menu__instructions">
           An attempt of a recreation of the TRON arcade game light cycles.
@@ -90,6 +92,7 @@
           <!-- Submit Button -->
           <button type="submit" id="start-game-btn" class="btn btn--primary btn--disabled" disabled>START GAME</button>
         </form>
+        </div>
       </section>
 
       <div class="game">
@@ -97,6 +100,7 @@
           <div class="game__info-row">
             <div class="score" aria-label="Score tracking">
               <h2 class="score__title">Wins</h2>
+              <span class="score__leader" aria-hidden="true"></span>
               <div class="score__display">
                 <span class="score__wins--blue">0</span>
                 <span class="score__separator">-</span>
@@ -106,6 +110,7 @@
 
             <div class="difficulty" aria-label="Current difficulty">
               <h2 class="difficulty__title">Difficulty</h2>
+              <span class="difficulty__leader" aria-hidden="true"></span>
               <div class="difficulty__current">
                 <span id="current-difficulty-text">Easy</span>
               </div>
@@ -115,7 +120,7 @@
 
         <section class="game__area" aria-label="Game canvas">
           <div class="game__canvas-container">
-            <canvas id="gameCanvas" class="canvas" width="800" height="560"></canvas>
+            <canvas id="gameCanvas" class="canvas" width="800" height="800"></canvas>
             <section class="overlay overlay--pause hidden" aria-label="Game paused">
               <div class="overlay__content">
                 <h1>Game Paused</h1>

@@ -1,0 +1,415 @@
+/* GRID Design System — tokens + baseline, vendored for Light Cycles.
+   Source: an internal design system
+   (design tokens and the base stylesheet this app uses)
+
+   Do not hand-edit values here. If the system moves, re-pull it.
+   Fonts: Rajdhani + Space Mono, both SIL OFL 1.1 — see public/fonts/OFL-*.txt */
+
+/* ── fonts ─────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Rajdhani";
+  src: url("/fonts/rajdhani-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/fonts/space-mono-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Space Mono";
+  src: url("/fonts/space-mono-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* ── colour ────────────────────────────────────────────────────────────── */
+:root {
+  --void: #000000;
+  --surface-0: #000000;
+  --surface-1: #060809;
+  --surface-2: #0c1013;
+  --surface-3: #141a1e;
+  --surface-scrim: rgb(0 0 0 / 0.78);
+
+  --line-100: #d6eaf2;
+  --line-200: #8fa8b4;
+  --line-300: #4a5a63;
+  --line-400: #202a2f;
+
+  --ink-100: #e4f2f8;
+  --ink-200: #a8bcc6;
+  --ink-300: #6b7c85;
+  --ink-400: #47555c;
+  --ink-invert: #000000;
+
+  --signal-amber:  oklch(0.83 0.14 82);
+  --signal-cyan:   oklch(0.83 0.14 225);
+  --signal-green:  oklch(0.83 0.14 155);
+  --signal-violet: oklch(0.83 0.14 300);
+  --signal-red:    oklch(0.70 0.19 27);
+
+  --signal-amber-dim:  oklch(0.58 0.10 82);
+  --signal-cyan-dim:   oklch(0.58 0.10 225);
+  --signal-green-dim:  oklch(0.58 0.10 155);
+  --signal-violet-dim: oklch(0.58 0.10 300);
+  --signal-red-dim:    oklch(0.50 0.14 27);
+
+  --signal-amber-fill:  oklch(0.83 0.14 82 / 0.12);
+  --signal-cyan-fill:   oklch(0.83 0.14 225 / 0.12);
+  --signal-green-fill:  oklch(0.83 0.14 155 / 0.12);
+  --signal-violet-fill: oklch(0.83 0.14 300 / 0.12);
+  --signal-red-fill:    oklch(0.70 0.19 27 / 0.14);
+
+  /* Meaning aliases — components ask for these, never the hue. */
+  --accent: var(--signal-amber);
+  --accent-fill: var(--signal-amber-fill);
+  --accent-on: var(--ink-invert);
+  --live: var(--signal-cyan);
+  --info: var(--signal-cyan);
+  --info-fill: var(--signal-cyan-fill);
+  --success: var(--signal-green);
+  --success-fill: var(--signal-green-fill);
+  --warning: var(--signal-amber);
+  --warning-fill: var(--signal-amber-fill);
+  --danger: var(--signal-red);
+  --danger-fill: var(--signal-red-fill);
+  --special: var(--signal-violet);
+  --special-fill: var(--signal-violet-fill);
+
+  --text-primary: var(--ink-100);
+  --text-secondary: var(--ink-200);
+  --text-meta: var(--ink-300);
+  --text-disabled: var(--ink-400);
+  --text-link: var(--signal-cyan);
+  --text-link-hover: var(--ink-100);
+
+  --border-strong: var(--line-100);
+  --border-default: var(--line-200);
+  --border-subtle: var(--line-300);
+  --border-faint: var(--line-400);
+  --border-focus: var(--signal-cyan);
+
+  --field-bg: var(--surface-2);
+  --field-border: var(--line-300);
+  --field-border-hover: var(--line-200);
+
+  --focus-color: var(--signal-cyan);
+  --leader-color: var(--line-300);
+  --scrim: var(--surface-scrim);
+
+  --elev-0: none;
+  --elev-flat: none;
+  --elev-raised: none;
+  --elev-dialog: 0 0 0 1px #000000;
+}
+
+/* ── type ──────────────────────────────────────────────────────────────── */
+:root {
+  --font-display: "Rajdhani", "Roboto Condensed", "Avenir Next Condensed",
+                  "Arial Narrow", "Liberation Sans Narrow", ui-sans-serif,
+                  system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas,
+               "Cascadia Mono", "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --font-body: var(--font-display);
+
+  /* 12px is a hard floor. Nothing below it, ever. */
+  --text-2xs:  12px;
+  --text-xs:   13px;
+  --text-sm:   14px;
+  --text-md:   16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  32px;
+  --text-4xl:  40px;
+  --text-5xl:  56px;
+  --text-6xl:  72px;
+  --text-hero: 112px;
+
+  --track-label: 0.18em;
+  --track-caps:  0.12em;
+  --track-title: 0.04em;
+  --track-mono:  0.02em;
+  --track-body:  0;
+
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-flat: 1;
+  --leading-tight: 1.08;
+  --leading-snug: 1.25;
+  --leading-normal: 1.55;
+  --leading-mono: 1.65;
+
+  --type-label-size:   var(--text-2xs);
+  --type-label-weight: var(--weight-semibold);
+  --type-label-track:  var(--track-label);
+  --type-data-size:    var(--text-xs);
+  --type-data-track:   var(--track-mono);
+}
+
+/* ── space ─────────────────────────────────────────────────────────────── */
+:root {
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+  --space-13: 128px;
+
+  --control-h-sm: 28px;
+  --control-h-md: 36px;
+  --control-h-lg: 44px;
+  --control-px-sm: 10px;
+  --control-px-md: 14px;
+  --control-px-lg: 20px;
+  --hit-min: 44px;
+
+  --panel-pad: 16px;
+  --panel-pad-dense: 12px;
+  --panel-pad-lg: 24px;
+  --panel-header-h: 26px;
+  --panel-header-pad: 10px 14px;
+  --panel-gap: 12px;
+  --panel-contained-max: 960px;
+
+  --page-gutter: 24px;
+  --page-max: 1440px;
+  --grid-cell: 32px;
+  --prose-max: 68ch;
+}
+
+/* ── stroke, frame, radius ─────────────────────────────────────────────── */
+:root {
+  --stroke-1: 1px;
+  --stroke-2: 2px;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --frame-notch: 18px;
+  --leader-style: dotted;
+  --radius-0: 0px;
+  --radius-1: 2px;
+  --radius-pill: 999px;
+  --scrim-blur: 2px;
+
+  /* glow machinery ships at 0 and stays there — this is the flat treatment,
+     not the CRT. Left in place rather than removed. */
+  --glow-strength: 0;
+  --glow-line: 0 0 0px #d6eaf2;
+  --glow-text: 0 0 calc(var(--glow-strength) * 10px) currentColor;
+
+  --inset-well:   inset 0 0 0 1px var(--line-300);
+  --inset-active: inset 0 0 0 1px var(--line-100);
+}
+
+/* ── panel profile ─────────────────────────────────────────────────────── */
+/* This app runs SHARP — the written spec. Square corners, 1px panel border,
+   12px panel headings. Set via <body data-panel-profile="sharp">. */
+:root {
+  --panel-border-style: round;
+  --panel-border-width: 2px;
+  --panel-radius-outer: 8px;
+  --grid-frame-inset: 4px;
+  --frame-gap: 4px;
+  --type-panel-size: var(--text-sm);
+}
+
+[data-panel-profile="sharp"] {
+  --panel-border-style: sharp;
+  --panel-border-width: var(--stroke-1);
+  --panel-radius-outer: 0px;
+  --grid-frame-inset: 5px;
+  --frame-gap: 5px;
+  --type-panel-size: var(--text-2xs);
+}
+
+:root,
+[data-panel-profile="sharp"] {
+  /* Derived. Never hand-write the inner radius. */
+  --panel-radius-inner: max(0px, calc(var(--panel-radius-outer) - var(--grid-frame-inset)));
+}
+
+/* ── motion ────────────────────────────────────────────────────────────── */
+/* The system is still. dur-state is the one non-zero duration, and it
+   transitions colour only — never transform, opacity, width or shadow. */
+:root {
+  --dur-instant: 0ms;
+  --dur-state: 80ms;
+  --dur-overlay: 0ms;
+  --ease-linear: linear;
+  --ease-state: linear;
+  --transition-state: color 80ms linear, background-color 80ms linear,
+                      border-color 80ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-state: 0ms;
+    --transition-state: color 0ms linear, background-color 0ms linear,
+                        border-color 0ms linear;
+  }
+}
+
+/* ── element baseline ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--track-title);
+  text-wrap: balance;
+}
+
+p { margin: 0; text-wrap: pretty; }
+
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--track-mono);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-on);
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--surface-0); }
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border: var(--stroke-1) solid var(--line-300);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--line-300); }
+
+/* ── utilities ─────────────────────────────────────────────────────────── */
+
+/* Caps micro-label: the interface talking about itself. */
+.g-label {
+  font-family: var(--font-display);
+  font-size: var(--type-label-size);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-track);
+  line-height: var(--leading-flat);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Machine voice: anything a system emitted. */
+.g-mono {
+  font-family: var(--font-mono);
+  font-size: var(--type-data-size);
+  letter-spacing: var(--track-mono);
+  line-height: var(--leading-mono);
+}
+
+/* Numeric alignment. A changing number must never reflow its row. */
+.g-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--track-mono);
+}
+
+/* The dotted leader — the single most characteristic mark in the system. */
+.g-leader {
+  flex: 1;
+  min-width: 8px;
+  border-top: var(--stroke-1) var(--leader-style) var(--leader-color);
+  transform: translateY(1px);
+}
+
+/* Status dot. Static — no pulse. */
+.g-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: currentColor;
+}
+
+/* Corner-bracket motif. Four on a position:relative box. */
+.g-notch {
+  position: absolute;
+  width: var(--frame-notch);
+  height: var(--frame-notch);
+  pointer-events: none;
+  border-color: currentColor;
+  border-style: solid;
+  border-width: 0;
+}
+.g-notch--tl { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.g-notch--tr { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+.g-notch--bl { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+.g-notch--br { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+/* Backdrop grid — faint hairline graph paper. */
+.g-grid-bg {
+  background-image:
+    linear-gradient(to right, var(--line-400) var(--stroke-1), transparent var(--stroke-1)),
+    linear-gradient(to bottom, var(--line-400) var(--stroke-1), transparent var(--stroke-1));
+  background-size: var(--grid-cell) var(--grid-cell);
+}
+
+/* Screen shell: the double frame that wraps a whole view. Use it ONCE. */
+.g-screen {
+  background: var(--surface-0);
+  border: var(--panel-border-width) solid var(--border-strong);
+  border-radius: var(--panel-radius-outer);
+  padding: var(--grid-frame-inset);
+}
+.g-screen > * {
+  border: var(--panel-border-width) solid var(--border-strong);
+  border-radius: var(--panel-radius-inner);
+  height: 100%;
+}
+
+/* Content well: a hairline box on surface-2 inside a panel body. */
+.g-well {
+  border: var(--stroke-1) solid var(--line-400);
+  border-radius: var(--panel-radius-inner);
+  background: var(--surface-2);
+  padding: var(--space-3);
+  min-width: 0;
+}
+
+.g-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

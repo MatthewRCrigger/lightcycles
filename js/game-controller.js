@@ -329,9 +329,13 @@ class View {
       this.soundGenerator.stopAll();
     }
 
-    // Show end overlay (game remains visible in background)
+    // Show end overlay (game remains visible in background).
+    // The markup ships this overlay with `hidden`, so drop that too — leaving
+    // both classes on the element relies purely on stylesheet order to decide
+    // which wins.
     const endOverlay = document.querySelector(".overlay--end");
     if (endOverlay) {
+      endOverlay.classList.remove("hidden");
       endOverlay.classList.add("overlay--visible");
     }
 
@@ -428,6 +432,7 @@ class View {
 
     if (pauseOverlay) {
       if (this.isPaused) {
+        pauseOverlay.classList.remove("hidden");
         pauseOverlay.classList.add("overlay--visible");
         // Stop all engine sounds when paused
         if (this.soundGenerator) {
@@ -473,17 +478,8 @@ class View {
       countdownOverlay.classList.remove("countdown--hidden");
       countdownOverlay.classList.add("countdown--visible");
 
-      // Reset animations by removing and re-adding classes
-      const countdownDisplay = document.querySelector(".countdown__display");
-      if (countdownDisplay) {
-        countdownDisplay.style.animation = "none";
-
-        // Force reflow
-        countdownDisplay.offsetHeight;
-
-        // Re-enable animations
-        countdownDisplay.style.animation = "countdownPulse 1s ease-in-out";
-      }
+      // No animation on the countdown. The GRID system is still: the number
+      // changes, it does not perform. (See "Elevation, transparency, motion".)
 
       if (GAME_CONFIG.DEBUG.LOG_GAME_EVENTS) {
         console.log(

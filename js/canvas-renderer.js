@@ -27,8 +27,9 @@ export class CanvasRenderer {
     canvas.width = gridWidth * this.cellSize;
     canvas.height = gridHeight * this.cellSize;
 
-    // Set up canvas styling using config
-    canvas.style.border = `4px solid ${GAME_CONFIG.COLORS.CANVAS_BORDER}`;
+    // The field's frame is drawn by CSS (a single GRID hairline on .canvas),
+    // so the renderer only owns the fill. Setting a border here would stack a
+    // second, thicker line on top of it.
     canvas.style.backgroundColor = GAME_CONFIG.COLORS.CANVAS_BG;
 
     // Create background canvas for performance optimization
@@ -135,31 +136,27 @@ export class CanvasRenderer {
     ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw grid pattern using config values
-    const blockSize = GAME_CONFIG.RENDERING.BLOCK_SIZE;
-    const borderSize = GAME_CONFIG.RENDERING.BORDER_SIZE;
-    const totalSize = blockSize + borderSize;
+    // Backdrop grid — repeating hairlines on a fixed pitch, matching the
+    // system's .g-grid-bg utility. Lines, not fills: the field reads as graph
+    // paper the cycles are drawn on, never as a field of lit tiles.
+    const pitch = GAME_CONFIG.RENDERING.GRID_PITCH;
 
-    ctx.fillStyle = GAME_CONFIG.COLORS.GRID_BACKGROUND;
+    ctx.strokeStyle = GAME_CONFIG.COLORS.GRID_BACKGROUND;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
 
-    // Calculate how many blocks fit in the canvas
-    const blocksX = Math.ceil(canvas.width / totalSize);
-    const blocksY = Math.ceil(canvas.height / totalSize);
-
-    for (let blockRow = 0; blockRow < blocksY; blockRow++) {
-      for (let blockColumn = 0; blockColumn < blocksX; blockColumn++) {
-        const blockPixelX = blockColumn * totalSize + borderSize / 2;
-        const blockPixelY = blockRow * totalSize + borderSize / 2;
-
-        // Only draw if the block is within canvas bounds
-        if (
-          blockPixelX + blockSize <= canvas.width &&
-          blockPixelY + blockSize <= canvas.height
-        ) {
-          ctx.fillRect(blockPixelX, blockPixelY, blockSize, blockSize);
-        }
-      }
+    // The 0.5 offset puts each 1px line on a pixel centre so it stays crisp
+    // rather than smearing across two columns.
+    for (let x = pitch; x < canvas.width; x += pitch) {
+      ctx.moveTo(Math.floor(x) + 0.5, 0);
+      ctx.lineTo(Math.floor(x) + 0.5, canvas.height);
     }
+    for (let y = pitch; y < canvas.height; y += pitch) {
+      ctx.moveTo(0, Math.floor(y) + 0.5);
+      ctx.lineTo(canvas.width, Math.floor(y) + 0.5);
+    }
+
+    ctx.stroke();
 
     // Mark background as rendered if this was the first time
     if (!this.backgroundRendered) {
@@ -354,7 +351,10 @@ export class CanvasRenderer {
     if (!explosionSprite || !explosionSprite.complete) {
       // Fallback: draw a simple explosion effect
       this.ctx.save();
-      this.ctx.fillStyle = frame === 0 ? '#FF6600' : '#FF3300';
+      this.ctx.fillStyle =
+        frame === 0
+          ? GAME_CONFIG.COLORS.RED_RIBBON_2
+          : GAME_CONFIG.COLORS.RED_RIBBON;
       this.ctx.fillRect(
         x,
         y,
@@ -480,7 +480,7 @@ export class CanvasRenderer {
     if (!window.gameState?.playerNames) return;
 
     this.ctx.save();
-    this.ctx.font = "bold 14px Arial";
+    this.ctx.font = `${GAME_CONFIG.RENDERING.LABEL_WEIGHT} ${GAME_CONFIG.RENDERING.LABEL_SIZE}px ${GAME_CONFIG.RENDERING.LABEL_FONT}`;
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
 
@@ -491,7 +491,7 @@ export class CanvasRenderer {
       const y1 = head1.row * this.cellSize - 20; // Above the light cycle
 
       // Background for better readability
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      this.ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
       const textWidth1 = this.ctx.measureText(
         window.gameState.playerNames.player1Name
       ).width;
@@ -509,7 +509,7 @@ export class CanvasRenderer {
       const y2 = head2.row * this.cellSize - 20; // Above the light cycle
 
       // Background for better readability
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      this.ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
       const textWidth2 = this.ctx.measureText(
         window.gameState.playerNames.player2Name
       ).width;
@@ -532,7 +532,7 @@ export class CanvasRenderer {
     if (!window.gameState?.playerNames) return;
 
     this.ctx.save();
-    this.ctx.font = "bold 14px Arial";
+    this.ctx.font = `${GAME_CONFIG.RENDERING.LABEL_WEIGHT} ${GAME_CONFIG.RENDERING.LABEL_SIZE}px ${GAME_CONFIG.RENDERING.LABEL_FONT}`;
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
 
@@ -549,7 +549,7 @@ export class CanvasRenderer {
             : `Player ${index + 1}`;
 
         // Background for better readability
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        this.ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
         const textWidth = this.ctx.measureText(playerName).width;
         this.ctx.fillRect(x - textWidth / 2 - 4, y - 8, textWidth + 8, 16);
 
@@ -572,7 +572,7 @@ export class CanvasRenderer {
             : `Computer ${index + 1}`;
 
         // Background for better readability
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        this.ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
         const textWidth = this.ctx.measureText(enemyName).width;
         this.ctx.fillRect(x - textWidth / 2 - 4, y - 8, textWidth + 8, 16);
 
@@ -614,11 +614,11 @@ export class CanvasRenderer {
     // Draw performance stats
     if (GAME_CONFIG.DEBUG.SHOW_PERFORMANCE_STATS && performanceMonitor) {
       const stats = performanceMonitor.getStats();
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+      this.ctx.fillStyle = GAME_CONFIG.COLORS.CANVAS_BG;
       this.ctx.fillRect(10, 10, 200, 100);
 
-      this.ctx.fillStyle = "white";
-      this.ctx.font = "12px monospace";
+      this.ctx.fillStyle = GAME_CONFIG.COLORS.INK_100;
+      this.ctx.font = `12px ${GAME_CONFIG.RENDERING.LABEL_FONT}`;
       this.ctx.fillText(`FPS: ${stats.fps}`, 15, 25);
       this.ctx.fillText(`Frame: ${stats.frameTime.toFixed(2)}ms`, 15, 40);
       this.ctx.fillText(`Min: ${stats.minFrameTime.toFixed(2)}ms`, 15, 55);
